@@ -2,13 +2,6 @@ erimport streamlit
 import pandas
 import snowflake.connector
 
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-my_cur.execute("SELECT * FROM fruit_load_list")
-my_data_row = my_cur.fetchone()
-streamlit.header("The fruit load list contains:")
-streamlit.dataframe(my_data_row)
-
 my_fruit_list = pandas.read_csv("https://uni-lab-files.s3.us-west-2.amazonaws.com/dabw/fruit_macros.txt")
 
 streamlit.title('My Moms New Healthy Diner')
@@ -36,8 +29,14 @@ fruit_choice = streamlit.text_input('What fruit would you like information about
 streamlit.write('The user entered: ', fruit_choice)
 fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_choice )
 
-
 # write your own comment -what does the next line do?  - Normalizes the json data structure
 fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
 # write your own comment - what does this do? - Shows a table with the formatted json data
 streamlit.dataframe(fruityvice_normalized)
+
+my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+my_cur = my_cnx.cursor()
+my_cur.execute("SELECT * FROM fruit_load_list")
+my_data_rows = my_cur.fetchall()
+streamlit.header("The fruit load list contains:")
+streamlit.dataframe(my_data_rows)
